@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Smart Doc Checker</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #1a3d8f;
+            /* full blue background */
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 32px;
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 22px;
+            color: #224488;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 34px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #224488;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 8px 14px;
+            border-radius: 6px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .nav-links a:hover {
+            background: #e0ebff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            color: #3366cc;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            color: #555;
+        }
+
+        .badge {
+            background: #e0ecff;
+            color: #3366cc;
+            border-radius: 12px;
+            padding: 2px 10px;
+            font-size: 12px;
+            margin-left: 4px;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        /* Sections */
+        section.hidden {
+            display: none;
+        }
+
+        section.visible {
+            display: block;
+        }
+
+        /* Dashboard styles */
+        .dashboard-cards {
+            display: flex;
+            gap: 18px;
+            margin: 28px 0 20px 0;
+            justify-content: center;
+        }
+
+        .card {
+            background: #fff;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+            padding: 32px 34px;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 125px;
+            text-align: center;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .card:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+        }
+
+        .card h3 {
+            font-size: 18px;
+            color: #717b9b;
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            font-size: 28px;
+            color: #224488;
+            margin: 0;
+        }
+
+        .external-policy {
+            margin: 44px auto;
+            max-width: 800px;
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px 32px;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        .external-policy h2 {
+            margin-top: 0;
+            color: #224488;
+        }
+
+        .policy-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .policy {
+            background: #f1f7ee;
+            border-radius: 6px;
+            padding: 12px 18px;
+            font-size: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #1c7f3c;
+        }
+
+        .policy.green {
+            border-left: 6px solid #2bb573;
+        }
+
+        /* Buttons */
+        .add-btn,
+        .choose-files,
+        #analyze-btn {
+            background: #3366cc;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 20px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .add-btn:hover,
+        .choose-files:hover,
+        #analyze-btn:hover {
+            background: #2b58b3;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Analysis section with DIFFERENT background */
+        #analysis {
+            background: linear-gradient(135deg, #e3f2ff, #fefeff);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .upload-box {
+            border: 2px dashed #224488;
+            border-radius: 12px;
+            padding: 30px 16px;
+            margin-top: 22px;
+            background: #f6f6ff;
+            text-align: center;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        #analysis-result {
+            margin-top: 32px;
+        }
+
+        /* Settings styles */
+        .settings-container {
+            max-width: 900px;
+            margin: 28px auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .settings-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.07);
+            padding: 28px;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .settings-card:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+        }
+
+        .settings-card h3 {
+            margin: 0 0 18px 0;
+            color: #224488;
+        }
+
+        .form-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 42px;
+        }
+
+        .plan-box {
+            background: #e4eeff;
+            border-radius: 7px;
+            padding: 8px 16px;
+            margin-bottom: 5px;
+        }
+
+        .plan-title {
+            font-weight: 600;
+            color: #2255aa;
+            margin-right: 12px;
+        }
+
+        .plan-info {
+            font-size: 13px;
+            color: #555;
+        }
+
+        .usage-details>div {
+            margin-bottom: 8px;
+            font-size: 15px;
+            color: #333;
+        }
+
+        .card-mask {
+            font-family: monospace;
+            color: #4b69a5;
+            font-size: 18px;
+        }
+
+        .pref-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .pref-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 7px 0;
+            border-bottom: 1px solid #f0f2f7;
+        }
+
+        .label {
+            font-weight: 500;
+            color: #224488;
+        }
+
+        .desc {
+            color: #6b7b8e;
+            font-size: 13px;
+        }
+
+        .toggle {
+            width: 40px;
+            height: 20px;
+            accent-color: #3370cc;
+            cursor: pointer;
+        }
+
+        .sec-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f2f2f2;
+        }
+
+        .action-link {
+            color: #2168cf;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            margin-bottom: 10px;
+        }
+
+        .form-row select,
+        .form-row input[type="text"] {
+            padding: 5px 10px;
+            border: 1px solid #ccdbe6;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="logo">Smart Doc Checker</div>
+        <ul class="nav-links">
+            <li><a id="nav-dashboard">Dashboard</a></li>
+            <li><a id="nav-analysis">Document Analysis</a></li>
+            <li><a id="nav-settings">Settings</a></li>
+        </ul>
+        <div class="profile">John Doe <span class="badge">Enterprise Plan</span></div>
+    </nav>
+    <main>
+        <!-- Dashboard -->
+        <section id="dashboard" class="visible">
+            <div class="dashboard-cards">
+                <div class="card">
+                    <h3>Documents Analyzed</h3>
+                    <p id="doc-count">0</p>
+                </div>
+                <div class="card">
+                    <h3>Reports Generated</h3>
+                    <p id="report-count">0</p>
+                </div>
+                <div class="card">
+                    <h3>This Month</h3>
+                    <p id="billing">$0.00</p>
+                </div>
+                <div class="card">
+                    <h3>Last Billing</h3>
+                    <p>1/15/2024</p>
+                </div>
+            </div>
+            <section class="external-policy">
+                <h2>External Policy Monitoring</h2>
+                <div class="policy-list" id="policy-list">
+                    <div class="policy green">University Academic Policies <span>Last checked: <span
+                                id="policy-checked"></span></span></div>
+                    <div class="policy green">Employee Handbook Updates</div>
+                </div>
+                <button class="add-btn" id="mock-update">Simulate External Update</button>
+            </section>
+        </section>
+        <!-- Analysis -->
+        <section id="analysis" class="hidden">
+            <h2>Document Upload & Analysis</h2>
+            <div class="upload-box">
+                <input type="file" id="fileUpload" multiple accept=".pdf,.docx,.txt" />
+                <label for="fileUpload" class="choose-files">Choose Files</label>
+                <p>Supports PDF, DOCX, TXT • Max 3 docs • Up to 10MB each</p>
+            </div>
+            <button id="analyze-btn">Analyze Documents</button>
+            <div id="analysis-result"></div>
+        </section>
+        <!-- Settings -->
+        <section id="settings" class="hidden">
+            <h2>Settings</h2>
+            <div class="settings-container">
+                <div class="settings-card">
+                    <h3>Billing & Usage</h3>
+                    <div class="form-group">
+                        <div>
+                            <div class="label">Current Plan</div>
+                            <div class="plan-box"><span class="plan-title">Enterprise Plan</span> <span
+                                    class="plan-info">$49/month • Unlimited documents</span></div>
+                        </div>
+                        <div class="usage-details">
+                            <div>Next Billing Date<br /><span>2024-02-15</span></div>
+                            <div>Usage This Month<br />
+                                <span>Documents Analyzed: <strong id="doc-count-set">0</strong></span><br />
+                                <span>Reports Generated: <strong id="report-count-set">0</strong></span>
+                            </div>
+                            <div>
+                                <div class="label">Payment Method</div>
+                                <span class="card-mask">**** **** **** 4242</span>
+                                <div>Expires 12/25</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-card">
+                    <h3>Notification Preferences</h3>
+                    <div class="pref-list">
+                        <div class="pref-row">
+                            <div>
+                                <div class="label">Conflict Detection Alerts</div>
+                                <div class="desc">Get notified when conflicts are detected</div>
+                            </div><input type="checkbox" checked class="toggle" />
+                        </div>
+                        <div class="pref-row">
+                            <div>
+                                <div class="label">Billing Updates</div>
+                                <div class="desc">Receive billing updates</div>
+                            </div><input type="checkbox" checked class="toggle" />
+                        </div>
+                        <div class="pref-row">
+                            <div>
+                                <div class="label">External Policy Changes</div>
+                                <div class="desc">Alert me when monitored sources change</div>
+                            </div><input type="checkbox" checked class="toggle" />
+                        </div>
+                        <div class="pref-row">
+                            <div>
+                                <div class="label">Weekly Summary Reports</div>
+                                <div class="desc">Receive weekly summaries</div>
+                            </div><input type="checkbox" class="toggle" />
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-card">
+                    <h3>Security & Privacy</h3>
+                    <div class="sec-row"><span>Two-Factor Authentication</span><a href="#"
+                            class="action-link">Enable</a></div>
+                    <div class="sec-row"><span>Data Retention</span><a href="#" class="action-link">Modify</a></div>
+                    <div class="sec-row"><span>Download Account Data</span><a href="#" class="action-link">Export</a>
+                    </div>
+                </div>
+                <div class="settings-card">
+                    <h3>External Monitoring</h3>
+                    <div class="form-row">
+                        <div class="label">Check Frequency</div>
+                        <select>
+                            <option>Every Hour</option>
+                            <option>Every Day</option>
+                            <option>Manual</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="label">Add New External Source</div>
+                        <div style="flex:1;display:flex;gap:8px;"><input type="text"
+                                placeholder="https://example.com/policies" style="flex:1;" /><button class="add-btn">Add</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script>
+        // Navigation
+        const dashboard = document.getElementById('dashboard'),
+            analysis = document.getElementById('analysis'),
+            settings = document.getElementById('settings');
+        document.getElementById('nav-dashboard').onclick = () => {
+            dashboard.className = 'visible';
+            analysis.className = 'hidden';
+            settings.className = 'hidden';
+        };
+        document.getElementById('nav-analysis').onclick = () => {
+            analysis.className = 'visible';
+            dashboard.className = 'hidden';
+            settings.className = 'hidden';
+        };
+        document.getElementById('nav-settings').onclick = () => {
+            settings.className = 'visible';
+            dashboard.className = 'hidden';
+            analysis.className = 'hidden';
+        };
+
+        // Dashboard counts
+        let docCount = 0,
+            reportCount = 0,
+            bill = 0.0;
+
+        function updateDashboard() {
+            document.getElementById('doc-count').textContent = docCount;
+            document.getElementById('report-count').textContent = reportCount;
+            document.getElementById('billing').textContent = "$" + bill.toFixed(2);
+            document.getElementById('doc-count-set').textContent = docCount;
+            document.getElementById('report-count-set').textContent = reportCount;
+        }
+        updateDashboard();
+
+        // File upload
+        let filesData = [];
+        document.getElementById('fileUpload').onchange = function (e) {
+            filesData = [];
+            let files = Array.from(e.target.files).slice(0, 3);
+            if (files.length === 0) return;
+            const readers = files.map(file => new Promise(res => {
+                let r = new FileReader();
+                r.onload = ev => {
+                    filesData.push({
+                        name: file.name,
+                        text: ev.target.result
+                    });
+                    res();
+                };
+                r.readAsText(file);
+            }));
+            Promise.all(readers).then(() => alert('Files loaded. Click "Analyze Documents" to check for conflicts.'));
+        };
+
+        // Conflict detection demo
+        function detectConflicts(file_texts) {
+            let conflicts = [];
+            for (let i = 0; i < file_texts.length; i++) {
+                for (let j = i + 1; j < file_texts.length; j++) {
+                    let t1 = file_texts[i].text.toLowerCase(),
+                        t2 = file_texts[j].text.toLowerCase();
+                    let regex = /submit (?:before|by) (\d{1,2} (?:pm|am|midnight))/;
+                    let m1 = t1.match(regex),
+                        m2 = t2.match(regex);
+                    if (m1 && m2 && m1[1] !== m2[1]) {
+                        conflicts.push({
+                            snippet1: `From ${file_texts[i].name}: "${m1[0]}"`,
+                            snippet2: `From ${file_texts[j].name}: "${m2[0]}"`,
+                            suggestion: `Choose a consistent deadline (e.g., ${m1[1]} or ${m2[1]})`
+                        });
+                    }
+                }
+            }
+            return conflicts;
+        }
+
+        // Analyze button
+        document.getElementById('analyze-btn').onclick = function () {
+            if (filesData.length < 2) {
+                alert('Please upload at least two documents.');
+                return;
+            }
+            docCount += filesData.length;
+            let conflicts = detectConflicts(filesData);
+            reportCount += 1;
+            bill += (filesData.length * 3.0) + (1 * 2.0);
+            updateDashboard();
+            let html = "<h3>Conflict Report</h3>";
+            if (conflicts.length === 0) {
+                html += "<p>No contradictions detected.</p>";
+            } else {
+                html += "<table border='1' style='width:100%;text-align:left;'><tr><th>Contradiction</th><th>Suggestion</th></tr>";
+                for (let c of conflicts) {
+                    html += `<tr><td>${c.snippet1}<br>${c.snippet2}</td><td>${c.suggestion}</td></tr>`;
+                }
+                html += "</table>";
+            }
+            document.getElementById('analysis-result').innerHTML = html;
+        };
+
+        // Mock external update
+        document.getElementById('policy-checked').textContent = new Date().toLocaleString();
+        document.getElementById('mock-update').onclick = function () {
+            document.getElementById('policy-list').innerHTML += `<div class="policy green">College Rules Update <span>Changes Detected</span></div>`;
+            alert('External policy update detected! Please re-run conflict analysis.');
+        };
+    </script>
+</body>
+
+</html>
